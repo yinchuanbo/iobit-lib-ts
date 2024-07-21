@@ -7,37 +7,89 @@ type IApiUrls = {
 
 type EventType = MouseEvent | TouchEvent;
 
-/**
- * 定义变量
- */
+interface HttpsTempFunction {
+  (str: string): string;
+}
+
+enum Language {
+  EN = "en",
+  AR = "ar",
+  TW = "tw",
+  KR = "kr",
+  JP = "jp",
+  IT = "it",
+  FR = "fr",
+  DE = "de",
+  PT = "pt",
+  ES = "es",
+}
+
+enum Website {
+  VD = ".vidnoz.com",
+  MIO = ".miocreate.com",
+}
+
+enum Environment {
+  Production = "production",
+  Test = "test",
+}
+
+const lang: Language = Language.EN;
+
+const excludedLangs: Language[] = [
+  Language.EN,
+  Language.AR,
+  Language.TW,
+  Language.KR,
+];
+
+function handleRes(bool: boolean): string;
+function handleRes(bool: boolean, type: 1 | 2): string;
+function handleRes(bool: boolean, type?: 1 | 2): string {
+  if (type === 1) {
+    return bool ? "" : `-${lang}`;
+  } else if (type === 2) {
+    return bool ? "www" : lang;
+  } else {
+    throw new Error("Invalid type specified");
+  }
+}
+
 const httpsTemp = (str: string): string => `https://${str}/`;
-const lang: string = "en";
-const mExcludeLang: string[] = ["en", "ar", "tw", "kr"];
-const domainPrefix: string = lang === "en" ? "www" : lang;
-const pcSuffix: string = lang === "en" ? "" : `-${lang}`;
-let mSuffix: string = mExcludeLang.includes(lang) ? "" : `-${lang}`;
 
-/**
- * 获取当前环境
- */
+const domainPrefix: string = handleRes(lang === Language.EN, 2);
+const pcSuffix: string = handleRes(lang === Language.EN, 1);
+let mSuffix: string = handleRes(excludedLangs.includes(lang), 1);
+
 const host: string = location.host;
-const curDomain: string = `${domainPrefix}.vidnoz.com`;
-const isProduction: boolean = host.includes(curDomain) ? true : false;
+const curDomain: string = `${domainPrefix}${Website.VD}`;
 
-/**
- * 处理请求地址和跳转地址
- */
+const environment: Environment = host.includes(curDomain)
+  ? Environment.Production
+  : Environment.Test;
+
 const baseApi: string = httpsTemp(
-  isProduction ? "tool-api.vidnoz.com" : "tool-api-test.vidnoz.com"
+  environment === Environment.Production
+    ? "tool-api.vidnoz.com"
+    : "tool-api-test.vidnoz.com"
 );
+
 const baseApiOld: string = httpsTemp(
-  isProduction ? "api.vidnoz.com" : "api-test.vidnoz.com"
+  environment === Environment.Production
+    ? "api.vidnoz.com"
+    : "api-test.vidnoz.com"
 );
+
 const pcAppDomain: string = httpsTemp(
-  isProduction ? `aiapp${pcSuffix}.vidnoz.com` : "ai-test.vidnoz.com"
+  environment === Environment.Production
+    ? `aiapp${pcSuffix}.vidnoz.com`
+    : "ai-test.vidnoz.com"
 );
+
 const mAppDomain: string = httpsTemp(
-  isProduction ? `m${mSuffix}.vidnoz.com` : "m-test-f700c64e.vidnoz.com"
+  environment === Environment.Production
+    ? `m${mSuffix}.vidnoz.com`
+    : "m-test-f700c64e.vidnoz.com"
 );
 
 /**
