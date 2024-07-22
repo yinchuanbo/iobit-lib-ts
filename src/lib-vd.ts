@@ -1,29 +1,28 @@
 /**
  * 定义类型
  */
-type IApiUrls = {
-  [key: string]: string;
-};
-
-type EventType = MouseEvent | TouchEvent;
-
-type ISiteName = "vidnoz" | "miocreate";
-
-interface HttpsTempFunction {
-  (str: string): string;
+namespace ITYPE {
+  export type IApiUrls = {
+    [key: string]: string;
+  };
+  export type EventType = MouseEvent | TouchEvent;
+  export type ISiteName = "vidnoz" | "miocreate";
+  export interface HttpsTempFunction {
+    (str: string): string;
+  }
 }
 
 enum Language {
-  EN = "en",
-  AR = "ar",
-  TW = "tw",
-  KR = "kr",
-  JP = "jp",
-  IT = "it",
-  FR = "fr",
-  DE = "de",
-  PT = "pt",
-  ES = "es",
+  en = "en",
+  ar = "ar",
+  tw = "tw",
+  kr = "kr",
+  jp = "jp",
+  it = "it",
+  fr = "fr",
+  de = "de",
+  pt = "pt",
+  es = "es",
 }
 
 enum Env {
@@ -44,7 +43,7 @@ let curDomain: string;
 let env: Env;
 let baseApi: string;
 let baseApiOld: string;
-let siteName: ISiteName = "vidnoz";
+let siteName: ITYPE.ISiteName = "vidnoz";
 
 const setVidnozData = (): void => {
   curDomain = `${domainPrefix}.vidnoz.com`;
@@ -70,13 +69,13 @@ const setMiocreateData = (): void => {
 const setGloalData = (curLan: Language): void => {
   if (curLan in Language) {
     lang = curLan;
-    domainPrefix = lang === Language.EN ? "www" : lang;
+    domainPrefix = lang === Language.en ? "www" : lang;
   } else {
     throw new Error("Language not supported");
   }
 };
 
-const setVars = (curLan: Language, websiteName: ISiteName): void => {
+const setVars = (curLan: Language, websiteName: ITYPE.ISiteName): void => {
   setGloalData(curLan);
   siteName = websiteName;
   switch (websiteName) {
@@ -217,7 +216,7 @@ class Methods {
     );
   }
   // 检测元素之外的点击
-  public checkClickOutside(ele: HTMLElement, evt: EventType): boolean {
+  public checkClickOutside(ele: HTMLElement, evt: ITYPE.EventType): boolean {
     return !ele.contains(evt.target as Node);
   }
   // 平滑滚动到页面顶部
@@ -353,7 +352,7 @@ class Service extends Memory {
  * API 封装
  */
 class API extends Service {
-  public ApiUrls: IApiUrls = {
+  public ApiUrls: ITYPE.IApiUrls = {
     "add-task": "ai/ai-tool/add-task",
     "get-task": "ai/tool/get-task",
     "get-access-url": "ai/source/get-access-url",
@@ -653,8 +652,8 @@ class API extends Service {
  * 输出
  */
 const $$ = (
-  curLan: Language = Language.EN,
-  websiteName: ISiteName = "vidnoz"
+  curLan: Language = Language.en,
+  websiteName: ITYPE.ISiteName = "vidnoz"
 ) => {
   setVars(curLan, websiteName);
   return {
