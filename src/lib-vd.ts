@@ -7,6 +7,8 @@ type IApiUrls = {
 
 type EventType = MouseEvent | TouchEvent;
 
+type ISiteName = "vidnoz" | "miocreate";
+
 interface HttpsTempFunction {
   (str: string): string;
 }
@@ -24,24 +26,14 @@ enum Language {
   ES = "es",
 }
 
-enum Website {
-  VD = ".vidnoz.com",
-  MIO = ".miocreate.com",
-}
-
 enum Env {
   Production = "production",
   Test = "test",
 }
 
-type FirstFourLanguages = Language.EN | Language.AR | Language.TW | Language.KR;
-
-const excludedLangs: FirstFourLanguages[] = [
-  Language.EN,
-  Language.AR,
-  Language.TW,
-  Language.KR,
-];
+/**
+ * 定义变量
+ */
 
 const httpsTemp = (str: string): string => `https://${str}/`;
 const host: string = location.host;
@@ -52,26 +44,50 @@ let curDomain: string;
 let env: Env;
 let baseApi: string;
 let baseApiOld: string;
+let siteName: ISiteName = "vidnoz";
 
-const setVars = (
-  curLan: Language = Language.EN,
-  isVD: boolean = true
-): void => {
-  if (isVD) {
+const setVidnozData = (): void => {
+  curDomain = `${domainPrefix}.vidnoz.com`;
+  env = host.includes(curDomain) ? Env.Production : Env.Test;
+  baseApi = httpsTemp(
+    env === Env.Production ? "tool-api.vidnoz.com" : "tool-api-test.vidnoz.com"
+  );
+  baseApiOld = httpsTemp(
+    env === Env.Production ? "api.vidnoz.com" : "api-test.vidnoz.com"
+  );
+};
+
+const setMiocreateData = (): void => {
+  curDomain = `${domainPrefix}.miocreate.com`;
+  env = host.includes(curDomain) ? Env.Production : Env.Test;
+  baseApi = httpsTemp(
+    env === Env.Production
+      ? "tool-api.miocreate.com"
+      : "tool-api-test.miocreate.com"
+  );
+};
+
+const setGloalData = (curLan: Language): void => {
+  if (curLan in Language) {
     lang = curLan;
     domainPrefix = lang === Language.EN ? "www" : lang;
-    curDomain = `${domainPrefix}${Website.VD}`;
-    env = host.includes(curDomain) ? Env.Production : Env.Test;
-    baseApi = httpsTemp(
-      env === Env.Production
-        ? "tool-api.vidnoz.com"
-        : "tool-api-test.vidnoz.com"
-    );
-    baseApiOld = httpsTemp(
-      env === Env.Production ? "api.vidnoz.com" : "api-test.vidnoz.com"
-    );
   } else {
-    // 处理其他马甲
+    throw new Error("Language not supported");
+  }
+};
+
+const setVars = (curLan: Language, websiteName: ISiteName): void => {
+  setGloalData(curLan);
+  siteName = websiteName;
+  switch (websiteName) {
+    case "vidnoz":
+      setVidnozData();
+      break;
+    case "miocreate":
+      setMiocreateData();
+      break;
+    default:
+      throw new Error("Website name not supported");
   }
 };
 
@@ -345,6 +361,12 @@ class API extends Service {
     "can-task": "ai/tool/can-task",
     "get-upload-url": "ai/source/get-upload-url",
   };
+  constructor() {
+    super();
+    if (siteName === "miocreate") {
+      console.log("我是 mio，此处可以修改 this.ApiUrls");
+    }
+  }
   public async addTask(params: any = {}): Promise<any> {
     try {
       const res = await this.post(
@@ -445,7 +467,7 @@ class API extends Service {
   public async getUploadUrl(params: any = {}): Promise<any> {
     try {
       const res = await this.post(
-        `${baseApiOld}${this.ApiUrls["get-upload-url"]}`,
+        `${baseApiOld || baseApi}${this.ApiUrls["get-upload-url"]}`,
         params
       );
       return Promise.resolve(res);
@@ -464,7 +486,6 @@ class API extends Service {
       return Promise.reject(error);
     }
   }
-  // 资源上传的统一封装
   public async uploadAssets({
     fileName,
     file,
@@ -518,7 +539,6 @@ class API extends Service {
       return Promise.reject(error);
     }
   }
-  // 资源下载的统一封装 - 本地下载
   public async downloadAssets({
     key,
     filename = "",
@@ -632,8 +652,11 @@ class API extends Service {
 /**
  * 输出
  */
-const $$ = (curLan: Language = Language.EN, isVD: boolean = true) => {
-  setVars(curLan, isVD);
+const $$ = (
+  curLan: Language = Language.EN,
+  websiteName: ISiteName = "vidnoz"
+) => {
+  setVars(curLan, websiteName);
   return {
     m: new Memory(),
     f: new Methods(),
