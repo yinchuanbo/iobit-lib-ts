@@ -29,14 +29,12 @@ enum Website {
   MIO = ".miocreate.com",
 }
 
-enum Environment {
+enum Env {
   Production = "production",
   Test = "test",
 }
 
 type FirstFourLanguages = Language.EN | Language.AR | Language.TW | Language.KR;
-
-const lang: Language = Language.EN;
 
 const excludedLangs: FirstFourLanguages[] = [
   Language.EN,
@@ -45,54 +43,37 @@ const excludedLangs: FirstFourLanguages[] = [
   Language.KR,
 ];
 
-function handleRes(bool: boolean): string;
-function handleRes(bool: boolean, type: 1 | 2): string;
-function handleRes(bool: boolean, type?: 1 | 2): string {
-  if (type === 1) {
-    return bool ? "" : `-${lang}`;
-  } else if (type === 2) {
-    return bool ? "www" : lang;
-  } else {
-    throw new Error("Invalid type specified");
-  }
-}
-
 const httpsTemp = (str: string): string => `https://${str}/`;
-
-const domainPrefix: string = handleRes(lang === Language.EN, 2);
-const pcSuffix: string = handleRes(lang === Language.EN, 1);
-let mSuffix: string = handleRes(excludedLangs.includes(lang), 1);
-
 const host: string = location.host;
-const curDomain: string = `${domainPrefix}${Website.VD}`;
 
-const environment: Environment = host.includes(curDomain)
-  ? Environment.Production
-  : Environment.Test;
+let lang: Language;
+let domainPrefix: string;
+let curDomain: string;
+let env: Env;
+let baseApi: string;
+let baseApiOld: string;
 
-const baseApi: string = httpsTemp(
-  environment === Environment.Production
-    ? "tool-api.vidnoz.com"
-    : "tool-api-test.vidnoz.com"
-);
-
-const baseApiOld: string = httpsTemp(
-  environment === Environment.Production
-    ? "api.vidnoz.com"
-    : "api-test.vidnoz.com"
-);
-
-const pcAppDomain: string = httpsTemp(
-  environment === Environment.Production
-    ? `aiapp${pcSuffix}.vidnoz.com`
-    : "ai-test.vidnoz.com"
-);
-
-const mAppDomain: string = httpsTemp(
-  environment === Environment.Production
-    ? `m${mSuffix}.vidnoz.com`
-    : "m-test-f700c64e.vidnoz.com"
-);
+const setVars = (
+  curLan: Language = Language.EN,
+  isVD: boolean = true
+): void => {
+  if (isVD) {
+    lang = curLan;
+    domainPrefix = lang === Language.EN ? "www" : lang;
+    curDomain = `${domainPrefix}${Website.VD}`;
+    env = host.includes(curDomain) ? Env.Production : Env.Test;
+    baseApi = httpsTemp(
+      env === Env.Production
+        ? "tool-api.vidnoz.com"
+        : "tool-api-test.vidnoz.com"
+    );
+    baseApiOld = httpsTemp(
+      env === Env.Production ? "api.vidnoz.com" : "api-test.vidnoz.com"
+    );
+  } else {
+    // 处理其他马甲
+  }
+};
 
 /**
  * 存储相关
@@ -651,14 +632,12 @@ class API extends Service {
 /**
  * 输出
  */
-const Imemory = new Memory();
-const Imethods = new Methods();
-const Iservice = new Service();
-const Iapi = new API();
-
-const $$ = {
-  m: Imemory,
-  f: Imethods,
-  s: Iservice,
-  a: Iapi,
+const $$ = (curLan: Language = Language.EN, isVD: boolean = true) => {
+  setVars(curLan, isVD);
+  return {
+    m: new Memory(),
+    f: new Methods(),
+    s: new Service(),
+    a: new API(),
+  };
 };
