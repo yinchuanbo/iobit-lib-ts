@@ -485,7 +485,7 @@ class API extends Service {
   public async uploadAssets({
     fileName,
     file,
-    permanent,
+    permanent = false,
   }: {
     fileName: string;
     file: File;
@@ -535,7 +535,7 @@ class API extends Service {
       return Promise.reject(error);
     }
   }
-  // 资源下载的统一封装
+  // 资源下载的统一封装 - 本地下载
   public async downloadAssets({
     key,
     filename = "",
