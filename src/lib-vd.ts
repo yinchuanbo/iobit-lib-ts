@@ -34,9 +34,11 @@ enum Environment {
   Test = "test",
 }
 
+type FirstFourLanguages = Language.EN | Language.AR | Language.TW | Language.KR;
+
 const lang: Language = Language.EN;
 
-const excludedLangs: Language[] = [
+const excludedLangs: FirstFourLanguages[] = [
   Language.EN,
   Language.AR,
   Language.TW,
