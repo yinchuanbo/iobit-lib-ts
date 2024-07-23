@@ -35,7 +35,7 @@ enum Env {
  * 定义变量
  */
 
-const httpsTemp: ITYPE.HttpsTempFunction = (str) => `https://${str}/`;
+const httpsTempLib: ITYPE.HttpsTempFunction = (str) => `https://${str}/`;
 const hostLib: string = location.host;
 
 let langLib: Language;
@@ -49,12 +49,12 @@ let siteName: ITYPE.ISiteName = "vidnoz";
 const setVidnozData: ITYPE.IFUNC = () => {
   curDomain = `${domainPrefix}.vidnoz.com`;
   environment = hostLib.includes(curDomain) ? Env.Production : Env.Test;
-  baseApiLib = httpsTemp(
+  baseApiLib = httpsTempLib(
     environment === Env.Production
       ? "tool-api.vidnoz.com"
       : "tool-api-test.vidnoz.com"
   );
-  baseApiOldLib = httpsTemp(
+  baseApiOldLib = httpsTempLib(
     environment === Env.Production ? "api.vidnoz.com" : "api-test.vidnoz.com"
   );
 };
@@ -62,7 +62,7 @@ const setVidnozData: ITYPE.IFUNC = () => {
 const setMiocreateData: ITYPE.IFUNC = () => {
   curDomain = `${domainPrefix}.miocreate.com`;
   environment = hostLib.includes(curDomain) ? Env.Production : Env.Test;
-  baseApiLib = httpsTemp(
+  baseApiLib = httpsTempLib(
     environment === Env.Production
       ? "tool-api.miocreate.com"
       : "tool-api-test.miocreate.com"
