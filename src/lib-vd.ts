@@ -386,7 +386,7 @@ class API extends Service {
       console.log("我是 mio，此处可以修改 this.ApiUrls");
     }
   }
-  public async addTask(params: any = {}): Promise<any> {
+  public addTask = async (params: any = {}): Promise<any> => {
     try {
       const res = await this.post(
         `${baseApiLib}${this.ApiUrls["add-task"]}`,
@@ -397,7 +397,7 @@ class API extends Service {
       return Promise.reject(error);
     }
   }
-  public async danceTask(params: any = {}): Promise<any> {
+  public danceTask = async (params: any = {}): Promise<any> => {
     try {
       const res = await this.post(
         `${baseApiLib}${this.ApiUrls["dance"]}`,
@@ -408,7 +408,7 @@ class API extends Service {
       return Promise.reject(error);
     }
   }
-  public async getTask(params: any = {}): Promise<any> {
+  public getTask = async (params: any = {}): Promise<any> => {
     try {
       const res = await this.post(
         `${baseApiLib}${this.ApiUrls["get-task"]}`,
@@ -419,11 +419,7 @@ class API extends Service {
       return Promise.reject(error);
     }
   }
-  public async loopTask(
-    addTData: any = {},
-    curTool: string = "",
-    callback: (res: any) => void = () => {}
-  ): Promise<any> {
+  public loopTask = async (addTData: any = {}, curTool: string = "", callback: (res: any) => void = () => {}): Promise<any> => {
     const _this = this;
     async function getTaskLoop(
       taskId: number,
@@ -478,7 +474,7 @@ class API extends Service {
       return Promise.reject(error);
     }
   }
-  public async getAccessUrl(params: any = {}): Promise<any> {
+  public getAccessUrl = async (params: any = {}): Promise<any> => {
     try {
       const res = await this.post(
         `${baseApiLib}${this.ApiUrls["get-access-url"]}`,
@@ -489,7 +485,7 @@ class API extends Service {
       return Promise.reject(error);
     }
   }
-  public async tempUploadUrl(params: any = {}): Promise<any> {
+  public tempUploadUrl = async (params: any = {}): Promise<any> => {
     try {
       const res = await this.post(
         `${baseApiLib}${this.ApiUrls["temp-upload-url"]}`,
@@ -500,7 +496,7 @@ class API extends Service {
       return Promise.reject(error);
     }
   }
-  public async getUploadUrl(params: any = {}): Promise<any> {
+  public getUploadUrl = async (params: any = {}): Promise<any> => {
     try {
       const res = await this.post(
         `${baseApiOldLib || baseApiLib}${this.ApiUrls["get-upload-url"]}`,
@@ -511,7 +507,7 @@ class API extends Service {
       return Promise.reject(error);
     }
   }
-  public async canTask(params: any = {}): Promise<any> {
+  public canTask = async (params: any = {}): Promise<any> => {
     try {
       const res = await this.post(
         `${baseApiLib}${this.ApiUrls["get-task"]}`,
@@ -522,15 +518,11 @@ class API extends Service {
       return Promise.reject(error);
     }
   }
-  public async uploadAssets({
-    fileName,
-    file,
-    permanent = false,
-  }: {
+  public uploadAssets = async ({fileName, file, permanent = false,}: {
     fileName: string;
     file: File;
     permanent: boolean;
-  }): Promise<any> {
+  }): Promise<any> => {
     const readText = (blob: Blob): Promise<boolean> => {
       return new Promise((resolve) => {
         const blobReader = new FileReader();
@@ -575,15 +567,11 @@ class API extends Service {
       return Promise.reject(error);
     }
   }
-  public async downloadAssets({
-    key,
-    filename = "",
-    callback = () => {},
-  }: {
+  public downloadAssets = async ({key, filename = "", callback = () => {},}: {
     key: string;
     filename?: string;
     callback?: (params: any) => void;
-  }): Promise<void> {
+  }): Promise<void> => {
     try {
       const accessData = await this.getAccessUrl({ key });
       const code = accessData?.code;
