@@ -371,7 +371,7 @@ class Service extends Memory {
  * API 封装
  */
 class API extends Service {
-  public ApiUrls: ITYPE.IApiUrls = {
+  ApiUrls: ITYPE.IApiUrls = {
     "add-task": "ai/ai-tool/add-task",
     "get-task": "ai/tool/get-task",
     "get-access-url": "ai/source/get-access-url",
@@ -383,13 +383,17 @@ class API extends Service {
   constructor() {
     super();
     if (siteName === "miocreate") {
-      console.log("我是 mio，此处可以修改 this.ApiUrls");
+      console.log("我是 mio, 此处可以修改 this.ApiUrls");
     }
   }
-  public addTask = async (params: any = {}): Promise<any> => {
+  async postTemp(
+    params: any = {},
+    pathname: string = "",
+    url: string = ""
+  ): Promise<any> {
     try {
       const res = await this.post(
-        `${baseApiLib}${this.ApiUrls["add-task"]}`,
+        url || `${baseApiLib}${this.ApiUrls[pathname]}`,
         params
       );
       return Promise.resolve(res);
@@ -397,29 +401,35 @@ class API extends Service {
       return Promise.reject(error);
     }
   }
-  public danceTask = async (params: any = {}): Promise<any> => {
-    try {
-      const res = await this.post(
-        `${baseApiLib}${this.ApiUrls["dance"]}`,
-        params
-      );
-      return Promise.resolve(res);
-    } catch (error) {
-      return Promise.reject(error);
-    }
+  async addTask(params: any = {}): Promise<any> {
+    this.postTemp(params, "add-task");
   }
-  public getTask = async (params: any = {}): Promise<any> => {
-    try {
-      const res = await this.post(
-        `${baseApiLib}${this.ApiUrls["get-task"]}`,
-        params
-      );
-      return Promise.resolve(res);
-    } catch (error) {
-      return Promise.reject(error);
-    }
+  async danceTask(params: any = {}): Promise<any> {
+    this.postTemp(params, "dance");
   }
-  public loopTask = async (addTData: any = {}, curTool: string = "", callback: (res: any) => void = () => {}): Promise<any> => {
+  async getTask(params: any = {}): Promise<any> {
+    this.postTemp(params, "get-task");
+  }
+  async getAccessUrl(params: any = {}): Promise<any> {
+    this.postTemp(params, "get-access-url");
+  }
+  async tempUploadUrl(params: any = {}): Promise<any> {
+    this.postTemp(params, "temp-upload-url");
+  }
+  async canTask(params: any = {}): Promise<any> {
+    this.postTemp(params, "can-task");
+  }
+  async getUploadUrl(params: any = {}): Promise<any> {
+    const url: string = `${baseApiOldLib || baseApiLib}${
+      this.ApiUrls["get-upload-url"]
+    }`;
+    this.postTemp(params, "", url);
+  }
+  async loopTask(
+    addTData: any = {},
+    curTool: string = "",
+    callback: (res: any) => void = () => {}
+  ): Promise<any> {
     const _this = this;
     async function getTaskLoop(
       taskId: number,
@@ -474,55 +484,15 @@ class API extends Service {
       return Promise.reject(error);
     }
   }
-  public getAccessUrl = async (params: any = {}): Promise<any> => {
-    try {
-      const res = await this.post(
-        `${baseApiLib}${this.ApiUrls["get-access-url"]}`,
-        params
-      );
-      return Promise.resolve(res);
-    } catch (error) {
-      return Promise.reject(error);
-    }
-  }
-  public tempUploadUrl = async (params: any = {}): Promise<any> => {
-    try {
-      const res = await this.post(
-        `${baseApiLib}${this.ApiUrls["temp-upload-url"]}`,
-        params
-      );
-      return Promise.resolve(res);
-    } catch (error) {
-      return Promise.reject(error);
-    }
-  }
-  public getUploadUrl = async (params: any = {}): Promise<any> => {
-    try {
-      const res = await this.post(
-        `${baseApiOldLib || baseApiLib}${this.ApiUrls["get-upload-url"]}`,
-        params
-      );
-      return Promise.resolve(res);
-    } catch (error) {
-      return Promise.reject(error);
-    }
-  }
-  public canTask = async (params: any = {}): Promise<any> => {
-    try {
-      const res = await this.post(
-        `${baseApiLib}${this.ApiUrls["get-task"]}`,
-        params
-      );
-      return Promise.resolve(res);
-    } catch (error) {
-      return Promise.reject(error);
-    }
-  }
-  public uploadAssets = async ({fileName, file, permanent = false,}: {
+  async uploadAssets({
+    fileName,
+    file,
+    permanent = false,
+  }: {
     fileName: string;
     file: File;
     permanent: boolean;
-  }): Promise<any> => {
+  }): Promise<any> {
     const readText = (blob: Blob): Promise<boolean> => {
       return new Promise((resolve) => {
         const blobReader = new FileReader();
@@ -567,11 +537,15 @@ class API extends Service {
       return Promise.reject(error);
     }
   }
-  public downloadAssets = async ({key, filename = "", callback = () => {},}: {
+  async downloadAssets({
+    key,
+    filename = "",
+    callback = () => {},
+  }: {
     key: string;
     filename?: string;
     callback?: (params: any) => void;
-  }): Promise<void> => {
+  }): Promise<void> {
     try {
       const accessData = await this.getAccessUrl({ key });
       const code = accessData?.code;
@@ -688,11 +662,27 @@ const $$ = (
   return new Proxy(
     {},
     {
-      get(target, prop) {
-        if (prop in memory) return memory[prop].bind(memory);
-        if (prop in methods) return methods[prop].bind(methods);
-        if (prop in service) return service[prop].bind(service);
-        if (prop in api) return api[prop].bind(api);
+      get(_, prop) {
+        if (prop in memory) {
+          return typeof memory[prop] === "function"
+            ? memory[prop].bind(memory)
+            : memory[prop];
+        }
+        if (prop in methods) {
+          return typeof methods[prop] === "function"
+            ? methods[prop].bind(methods)
+            : methods[prop];
+        }
+        if (prop in service) {
+          return typeof service[prop] === "function"
+            ? service[prop].bind(service)
+            : service[prop];
+        }
+        if (prop in api) {
+          return typeof api[prop] === "function"
+            ? api[prop].bind(api)
+            : api[prop];
+        }
         return undefined;
       },
     }
