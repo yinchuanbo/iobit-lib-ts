@@ -287,7 +287,7 @@ class Methods {
   }
 
   // 查找节点的方法
-  public qs(args: any): Element | null {
+  public qsLib(args: any): Element | null {
     const len = args.length;
     if (!len || len > 2) return null;
     if (len === 1) {
