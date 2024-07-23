@@ -1,17 +1,19 @@
 /**
  * 定义类型
  */
-namespace ITYPE {
-  export type IURL = {
-    [key: string]: string;
-  };
-  export type EventType = MouseEvent | TouchEvent;
-  export type ISiteName = "vidnoz" | "miocreate";
-  export interface HttpsTempFunction {
-    (str: string): string;
-  }
-  export type IFUNC = () => void;
+type IURL = {
+  [key: string]: string;
+};
+
+type EventType = MouseEvent | TouchEvent;
+
+type ISiteName = "vidnoz" | "miocreate";
+
+interface HttpsTempFunction {
+  (str: string): string;
 }
+
+type IFUNC = (str: string) => void;
 
 enum Language {
   en = "en",
@@ -34,8 +36,7 @@ enum Env {
 /**
  * 定义变量
  */
-
-const httpsTempLib: ITYPE.HttpsTempFunction = (str) => `https://${str}/`;
+const httpsTempLib: HttpsTempFunction = (str) => `https://${str}/`;
 const hostLib: string = location.host;
 
 let langLib: Language;
@@ -44,29 +45,22 @@ let curDomain: string;
 let environment: Env;
 let baseApiLib: string;
 let baseApiOldLib: string;
-let siteName: ITYPE.ISiteName = "vidnoz";
+let siteName: ISiteName = "vidnoz";
 
-const setVidnozData: ITYPE.IFUNC = () => {
-  curDomain = `${domainPrefix}.vidnoz.com`;
+const setEnvByWebite: IFUNC = (domain: string = "") => {
+  curDomain = `${domainPrefix}.${domain}.com`;
   environment = hostLib.includes(curDomain) ? Env.Production : Env.Test;
   baseApiLib = httpsTempLib(
     environment === Env.Production
-      ? "tool-api.vidnoz.com"
-      : "tool-api-test.vidnoz.com"
+      ? `tool-api.${domain}.com`
+      : `tool-api-test.${domain}.com`
   );
-  baseApiOldLib = httpsTempLib(
-    environment === Env.Production ? "api.vidnoz.com" : "api-test.vidnoz.com"
-  );
-};
-
-const setMiocreateData: ITYPE.IFUNC = () => {
-  curDomain = `${domainPrefix}.miocreate.com`;
-  environment = hostLib.includes(curDomain) ? Env.Production : Env.Test;
-  baseApiLib = httpsTempLib(
-    environment === Env.Production
-      ? "tool-api.miocreate.com"
-      : "tool-api-test.miocreate.com"
-  );
+  if (domain === "vidnoz")
+    baseApiOldLib = httpsTempLib(
+      environment === Env.Production
+        ? `api.${domain}.com`
+        : `api-test.${domain}.com`
+    );
 };
 
 const errorTips = (str: string = ""): never => {
@@ -82,15 +76,13 @@ const setGloalData = (curLan: Language): void => {
   }
 };
 
-const setVars = (curLan: Language, websiteName: ITYPE.ISiteName): void => {
+const setVars = (curLan: Language, websiteName: ISiteName): void => {
   setGloalData(curLan);
   siteName = websiteName;
   switch (websiteName) {
     case "vidnoz":
-      setVidnozData();
-      break;
     case "miocreate":
-      setMiocreateData();
+      setEnvByWebite(websiteName);
       break;
     default:
       errorTips("Website name not supported");
@@ -223,7 +215,7 @@ class Methods {
     );
   }
   // 检测元素之外的点击
-  public checkClickOutside(ele: HTMLElement, evt: ITYPE.EventType): boolean {
+  public checkClickOutside(ele: HTMLElement, evt: EventType): boolean {
     return !ele.contains(evt.target as Node);
   }
   // 平滑滚动到页面顶部
@@ -371,7 +363,7 @@ class Service extends Memory {
  * API 封装
  */
 class API extends Service {
-  ApiUrls: ITYPE.IURL = {
+  ApiUrls: IURL = {
     "add-task": "ai/ai-tool/add-task",
     "get-task": "ai/tool/get-task",
     "get-access-url": "ai/source/get-access-url",
@@ -653,7 +645,7 @@ class API extends Service {
  */
 const $$ = (
   curLan: Language = Language.en,
-  websiteName: ITYPE.ISiteName = "vidnoz"
+  websiteName: ISiteName = "vidnoz"
 ) => {
   setVars(curLan, websiteName);
   const memory: any = new Memory();
