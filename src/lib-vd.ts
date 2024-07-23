@@ -366,6 +366,7 @@ class API extends Service {
     "temp-upload-url": "ai/source/temp-upload-url",
     "can-task": "ai/tool/can-task",
     "get-upload-url": "ai/source/get-upload-url",
+    dance: "ai/tool/dance",
   };
   constructor() {
     super();
@@ -377,6 +378,17 @@ class API extends Service {
     try {
       const res = await this.post(
         `${baseApiLib}${this.ApiUrls["add-task"]}`,
+        params
+      );
+      return Promise.resolve(res);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+  public async danceTask(params: any = {}): Promise<any> {
+    try {
+      const res = await this.post(
+        `${baseApiLib}${this.ApiUrls["dance"]}`,
         params
       );
       return Promise.resolve(res);
@@ -397,6 +409,7 @@ class API extends Service {
   }
   public async loopTask(
     addTData: any = {},
+    curTool: string = "",
     callback: (res: any) => void = () => {}
   ): Promise<any> {
     const _this = this;
@@ -425,7 +438,12 @@ class API extends Service {
       }
     }
     try {
-      const res = await this.addTask(addTData);
+      let res: any = null;
+      if (curTool === "dance") {
+        res = await this.danceTask(addTData);
+      } else {
+        res = await this.addTask(addTData);
+      }
       const code = res?.code;
       const taskId = res?.data?.task_id;
       if (code === 200 && taskId) {
