@@ -68,7 +68,7 @@ const setMiocreateData: ITYPE.IFUNC = () => {
 };
 
 const errorTips = (str: string = ""): never => {
-  throw new Error(`${str} not supported`);
+  throw new Error(`${str}`);
 };
 
 const setGloalData = (curLan: Language): void => {
@@ -76,7 +76,7 @@ const setGloalData = (curLan: Language): void => {
     lang = curLan;
     domainPrefix = lang === Language.en ? "www" : lang;
   } else {
-    errorTips("Language");
+    errorTips("Language not supported");
   }
 };
 
@@ -91,7 +91,7 @@ const setVars = (curLan: Language, websiteName: ITYPE.ISiteName): void => {
       setMiocreateData();
       break;
     default:
-      errorTips("Website name");
+      errorTips("Website name not supported");
   }
 };
 
