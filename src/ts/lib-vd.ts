@@ -2,7 +2,7 @@
  * 定义类型
  */
 namespace ITYPE {
-  export type IApiUrls = {
+  export type IURL = {
     [key: string]: string;
   };
   export type EventType = MouseEvent | TouchEvent;
@@ -371,7 +371,7 @@ class Service extends Memory {
  * API 封装
  */
 class API extends Service {
-  ApiUrls: ITYPE.IApiUrls = {
+  ApiUrls: ITYPE.IURL = {
     "add-task": "ai/ai-tool/add-task",
     "get-task": "ai/tool/get-task",
     "get-access-url": "ai/source/get-access-url",
@@ -391,6 +391,7 @@ class API extends Service {
     pathname: string = "",
     url: string = ""
   ): Promise<any> {
+    console.log("dddd", this.post);
     try {
       const res = await this.post(
         url || `${baseApiLib}${this.ApiUrls[pathname]}`,

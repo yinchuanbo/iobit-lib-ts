@@ -7,8 +7,8 @@
     "lib": "lib"
   },
   "scripts": {
-    "babel": "tsc --noEmit && babel src --out-dir lib --extensions \".ts\" && npm run minify",
-    "bundle": "tsc --noEmit && babel src --out-file dist\\bundle.js --extensions \".ts",
+    "babel": "tsc --noEmit && babel src/ts --out-dir lib --extensions \".ts\" && npm run minify",
+    "bundle": "tsc --noEmit && babel src/ts --out-file dist\\bundle.js --extensions \".ts",
     "minify": "node minify-scripts.js"
   },
   "author": "king",
