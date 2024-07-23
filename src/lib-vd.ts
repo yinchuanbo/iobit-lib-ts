@@ -10,6 +10,7 @@ namespace ITYPE {
   export interface HttpsTempFunction {
     (str: string): string;
   }
+  export type IFUNC = () => void;
 }
 
 enum Language {
@@ -34,7 +35,7 @@ enum Env {
  * 定义变量
  */
 
-const httpsTemp = (str: string): string => `https://${str}/`;
+const httpsTemp: ITYPE.HttpsTempFunction = (str) => `https://${str}/`;
 const host: string = location.host;
 
 let lang: Language;
@@ -45,7 +46,7 @@ let baseApi: string;
 let baseApiOld: string;
 let siteName: ITYPE.ISiteName = "vidnoz";
 
-const setVidnozData = (): void => {
+const setVidnozData: ITYPE.IFUNC = () => {
   curDomain = `${domainPrefix}.vidnoz.com`;
   env = host.includes(curDomain) ? Env.Production : Env.Test;
   baseApi = httpsTemp(
@@ -56,7 +57,7 @@ const setVidnozData = (): void => {
   );
 };
 
-const setMiocreateData = (): void => {
+const setMiocreateData: ITYPE.IFUNC = () => {
   curDomain = `${domainPrefix}.miocreate.com`;
   env = host.includes(curDomain) ? Env.Production : Env.Test;
   baseApi = httpsTemp(
@@ -75,7 +76,7 @@ const setGloalData = (curLan: Language): void => {
     lang = curLan;
     domainPrefix = lang === Language.en ? "www" : lang;
   } else {
-    errorTips("Language")
+    errorTips("Language");
   }
 };
 
@@ -90,7 +91,7 @@ const setVars = (curLan: Language, websiteName: ITYPE.ISiteName): void => {
       setMiocreateData();
       break;
     default:
-      errorTips("Website name")
+      errorTips("Website name");
   }
 };
 
