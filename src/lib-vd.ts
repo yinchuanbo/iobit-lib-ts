@@ -41,27 +41,29 @@ const host: string = location.host;
 let lang: Language;
 let domainPrefix: string;
 let curDomain: string;
-let env: Env;
-let baseApi: string;
-let baseApiOld: string;
+let environment: Env;
+let baseApiLib: string;
+let baseApiOldLib: string;
 let siteName: ITYPE.ISiteName = "vidnoz";
 
 const setVidnozData: ITYPE.IFUNC = () => {
   curDomain = `${domainPrefix}.vidnoz.com`;
-  env = host.includes(curDomain) ? Env.Production : Env.Test;
-  baseApi = httpsTemp(
-    env === Env.Production ? "tool-api.vidnoz.com" : "tool-api-test.vidnoz.com"
+  environment = host.includes(curDomain) ? Env.Production : Env.Test;
+  baseApiLib = httpsTemp(
+    environment === Env.Production
+      ? "tool-api.vidnoz.com"
+      : "tool-api-test.vidnoz.com"
   );
-  baseApiOld = httpsTemp(
-    env === Env.Production ? "api.vidnoz.com" : "api-test.vidnoz.com"
+  baseApiOldLib = httpsTemp(
+    environment === Env.Production ? "api.vidnoz.com" : "api-test.vidnoz.com"
   );
 };
 
 const setMiocreateData: ITYPE.IFUNC = () => {
   curDomain = `${domainPrefix}.miocreate.com`;
-  env = host.includes(curDomain) ? Env.Production : Env.Test;
-  baseApi = httpsTemp(
-    env === Env.Production
+  environment = host.includes(curDomain) ? Env.Production : Env.Test;
+  baseApiLib = httpsTemp(
+    environment === Env.Production
       ? "tool-api.miocreate.com"
       : "tool-api-test.miocreate.com"
   );
@@ -374,7 +376,7 @@ class API extends Service {
   public async addTask(params: any = {}): Promise<any> {
     try {
       const res = await this.post(
-        `${baseApi}${this.ApiUrls["add-task"]}`,
+        `${baseApiLib}${this.ApiUrls["add-task"]}`,
         params
       );
       return Promise.resolve(res);
@@ -385,7 +387,7 @@ class API extends Service {
   public async getTask(params: any = {}): Promise<any> {
     try {
       const res = await this.post(
-        `${baseApi}${this.ApiUrls["get-task"]}`,
+        `${baseApiLib}${this.ApiUrls["get-task"]}`,
         params
       );
       return Promise.resolve(res);
@@ -449,7 +451,7 @@ class API extends Service {
   public async getAccessUrl(params: any = {}): Promise<any> {
     try {
       const res = await this.post(
-        `${baseApi}${this.ApiUrls["get-access-url"]}`,
+        `${baseApiLib}${this.ApiUrls["get-access-url"]}`,
         params
       );
       return Promise.resolve(res);
@@ -460,7 +462,7 @@ class API extends Service {
   public async tempUploadUrl(params: any = {}): Promise<any> {
     try {
       const res = await this.post(
-        `${baseApi}${this.ApiUrls["temp-upload-url"]}`,
+        `${baseApiLib}${this.ApiUrls["temp-upload-url"]}`,
         params
       );
       return Promise.resolve(res);
@@ -471,7 +473,7 @@ class API extends Service {
   public async getUploadUrl(params: any = {}): Promise<any> {
     try {
       const res = await this.post(
-        `${baseApiOld || baseApi}${this.ApiUrls["get-upload-url"]}`,
+        `${baseApiOldLib || baseApiLib}${this.ApiUrls["get-upload-url"]}`,
         params
       );
       return Promise.resolve(res);
@@ -482,7 +484,7 @@ class API extends Service {
   public async canTask(params: any = {}): Promise<any> {
     try {
       const res = await this.post(
-        `${baseApi}${this.ApiUrls["get-task"]}`,
+        `${baseApiLib}${this.ApiUrls["get-task"]}`,
         params
       );
       return Promise.resolve(res);
@@ -661,10 +663,20 @@ const $$ = (
   websiteName: ITYPE.ISiteName = "vidnoz"
 ) => {
   setVars(curLan, websiteName);
-  return {
-    m: new Memory(),
-    f: new Methods(),
-    s: new Service(),
-    a: new API(),
-  };
+  const memory: any = new Memory();
+  const methods: any = new Methods();
+  const service: any = new Service();
+  const api: any = new API();
+  return new Proxy(
+    {},
+    {
+      get(target, prop) {
+        if (prop in memory) return memory[prop].bind(memory);
+        if (prop in methods) return methods[prop].bind(methods);
+        if (prop in service) return service[prop].bind(service);
+        if (prop in api) return api[prop].bind(api);
+        return undefined;
+      },
+    }
+  );
 };
