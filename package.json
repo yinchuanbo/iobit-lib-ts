@@ -23,5 +23,8 @@
     "@babel/preset-env": "^7.15.0",
     "@babel/preset-typescript": "^7.15.0",
     "terser": "^5.31.3"
+  },
+  "dependencies": {
+    "typescript": "^5.5.4"
   }
 }

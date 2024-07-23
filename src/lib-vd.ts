@@ -285,6 +285,18 @@ class Methods {
     if (!data) return data;
     return JSON.parse(JSON.stringify(data));
   }
+
+  // 查找节点的方法
+  public qs(args: any): Element | null {
+    const len = args.length;
+    if (!len || len > 2) return null;
+    if (len === 1) {
+      return document.querySelector(args[0]);
+    } else if (len === 2) {
+      return args[0].querySelector(args[1]);
+    }
+    return null;
+  }
 }
 
 /**
