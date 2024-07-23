@@ -36,9 +36,9 @@ enum Env {
  */
 
 const httpsTemp: ITYPE.HttpsTempFunction = (str) => `https://${str}/`;
-const host: string = location.host;
+const hostLib: string = location.host;
 
-let lang: Language;
+let langLib: Language;
 let domainPrefix: string;
 let curDomain: string;
 let environment: Env;
@@ -48,7 +48,7 @@ let siteName: ITYPE.ISiteName = "vidnoz";
 
 const setVidnozData: ITYPE.IFUNC = () => {
   curDomain = `${domainPrefix}.vidnoz.com`;
-  environment = host.includes(curDomain) ? Env.Production : Env.Test;
+  environment = hostLib.includes(curDomain) ? Env.Production : Env.Test;
   baseApiLib = httpsTemp(
     environment === Env.Production
       ? "tool-api.vidnoz.com"
@@ -61,7 +61,7 @@ const setVidnozData: ITYPE.IFUNC = () => {
 
 const setMiocreateData: ITYPE.IFUNC = () => {
   curDomain = `${domainPrefix}.miocreate.com`;
-  environment = host.includes(curDomain) ? Env.Production : Env.Test;
+  environment = hostLib.includes(curDomain) ? Env.Production : Env.Test;
   baseApiLib = httpsTemp(
     environment === Env.Production
       ? "tool-api.miocreate.com"
@@ -75,8 +75,8 @@ const errorTips = (str: string = ""): never => {
 
 const setGloalData = (curLan: Language): void => {
   if (curLan in Language) {
-    lang = curLan;
-    domainPrefix = lang === Language.en ? "www" : lang;
+    langLib = curLan;
+    domainPrefix = langLib === Language.en ? "www" : langLib;
   } else {
     errorTips("Language not supported");
   }
@@ -295,7 +295,7 @@ class Service extends Memory {
     const headers: HeadersInit = {
       "Content-Type": "application/json",
       "X-TASK-VERSION": (window as any).XTASKVERSION || "2.0.0",
-      "Request-Language": lang,
+      "Request-Language": langLib,
     };
     const curToken: any = this.getCookie("access_token");
     if (curToken) headers["Authorization"] = "Bearer " + curToken;
