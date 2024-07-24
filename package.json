@@ -7,7 +7,7 @@
     "lib": "lib"
   },
   "scripts": {
-    "babel": "tsc --noEmit && babel src/ts --out-dir lib --extensions \".ts\" && npm run minify",
+    "babel": "babel src/ts --out-dir lib --extensions \".ts\" && npm run minify",
     "bundle": "tsc --noEmit && babel src/ts --out-file dist\\bundle.js --extensions \".ts",
     "minify": "node minify-scripts.js"
   },

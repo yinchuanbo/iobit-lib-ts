@@ -295,6 +295,13 @@ class Methods {
  * 请求方法
  */
 class Service extends Memory {
+  constructor() {
+    super()
+    this.get = this.get.bind(this);
+    this.post = this.post.bind(this);
+    this.postFormData = this.postFormData.bind(this);
+    this.put = this.put.bind(this);
+  }
   public getHeaders(): HeadersInit {
     const headers: HeadersInit = {
       "Content-Type": "application/json",
@@ -374,6 +381,17 @@ class API extends Service {
   };
   constructor() {
     super();
+    this.postTemp = this.postTemp.bind(this);
+    this.addTask = this.addTask.bind(this);
+    this.danceTask = this.danceTask.bind(this);
+    this.getTask = this.getTask.bind(this);
+    this.getAccessUrl = this.getAccessUrl.bind(this);
+    this.tempUploadUrl = this.tempUploadUrl.bind(this);
+    this.canTask = this.canTask.bind(this);
+    this.getUploadUrl = this.getUploadUrl.bind(this);
+    this.loopTask = this.loopTask.bind(this);
+    this.uploadAssets = this.uploadAssets.bind(this);
+    this.downloadAssets = this.downloadAssets.bind(this);
     if (siteName === "miocreate") {
       console.log("我是 mio, 此处可以修改 this.ApiUrls");
     }
@@ -407,6 +425,8 @@ class API extends Service {
     this.postTemp(params, "get-access-url");
   }
   async tempUploadUrl(params: any = {}): Promise<any> {
+    console.log('this', this)
+    console.log('this.postTemp', this.postTemp)
     this.postTemp(params, "temp-upload-url");
   }
   async canTask(params: any = {}): Promise<any> {
