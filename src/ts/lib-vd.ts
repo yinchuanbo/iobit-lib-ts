@@ -296,7 +296,7 @@ class Methods {
  */
 class Service extends Memory {
   constructor() {
-    super()
+    super();
     this.get = this.get.bind(this);
     this.post = this.post.bind(this);
     this.postFormData = this.postFormData.bind(this);
@@ -401,7 +401,6 @@ class API extends Service {
     pathname: string = "",
     url: string = ""
   ): Promise<any> {
-    console.log("dddd", this.post);
     try {
       const res = await this.post(
         url || `${baseApiLib}${this.ApiUrls[pathname]}`,
@@ -413,30 +412,28 @@ class API extends Service {
     }
   }
   async addTask(params: any = {}): Promise<any> {
-    this.postTemp(params, "add-task");
+    return await this.postTemp(params, "add-task");
   }
   async danceTask(params: any = {}): Promise<any> {
-    this.postTemp(params, "dance");
+    return await this.postTemp(params, "dance");
   }
   async getTask(params: any = {}): Promise<any> {
-    this.postTemp(params, "get-task");
+    return await this.postTemp(params, "get-task");
   }
   async getAccessUrl(params: any = {}): Promise<any> {
-    this.postTemp(params, "get-access-url");
+    return await this.postTemp(params, "get-access-url");
   }
   async tempUploadUrl(params: any = {}): Promise<any> {
-    console.log('this', this)
-    console.log('this.postTemp', this.postTemp)
-    this.postTemp(params, "temp-upload-url");
+    return await this.postTemp(params, "temp-upload-url");
   }
   async canTask(params: any = {}): Promise<any> {
-    this.postTemp(params, "can-task");
+    return await this.postTemp(params, "can-task");
   }
   async getUploadUrl(params: any = {}): Promise<any> {
     const url: string = `${baseApiOldLib || baseApiLib}${
       this.ApiUrls["get-upload-url"]
     }`;
-    this.postTemp(params, "", url);
+    return await this.postTemp(params, "", url);
   }
   async loopTask(
     addTData: any = {},
@@ -522,6 +519,7 @@ class API extends Service {
       const res = await (permanent ? this.getUploadUrl : this.tempUploadUrl)({
         file_name: fileName || `default.${file.type}`,
       });
+      console.log("res", res);
       const code = res?.code;
       const uploadUrl = res?.data?.upload_url;
       const key = res?.data?.key;
