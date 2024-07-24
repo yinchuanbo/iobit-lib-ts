@@ -361,7 +361,7 @@ class Service extends Memory {
     return fetch(url, {
       method: "PUT",
       headers,
-      body: JSON.stringify(data),
+      body: data,
     }).then((response) => response.status);
   }
 }
@@ -661,7 +661,7 @@ class API extends Service {
 /**
  * 输出
  */
-const $$ = (
+const $LIB = (
   curLan: Language = Language.en,
   websiteName: ISiteName = "vidnoz"
 ) => {
