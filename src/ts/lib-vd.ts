@@ -279,9 +279,9 @@ class Methods {
   }
 
   // 查找节点的方法
-  public qsLib(args: any): Element | null {
-    const len = args.length;
-    if (!len || len > 2) return null;
+  public qsLib(...args: any): Element | null {
+    const len = args?.length;
+    if (len === 0 || len > 2) return null;
     if (len === 1) {
       return document.querySelector(args[0]);
     } else if (len === 2) {
