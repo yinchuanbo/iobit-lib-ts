@@ -47,19 +47,16 @@ let baseApiLib: string;
 let baseApiOldLib: string;
 let siteName: ISiteName = "vidnoz";
 
-const setEnvByWebite: IFUNC = (domain: string = "") => {
+const setEnvByWebite: IFUNC = (domain) => {
   curDomain = `${domainPrefix}.${domain}.com`;
   environment = hostLib.includes(curDomain) ? Env.Production : Env.Test;
+  const isPro = environment === Env.Production;
   baseApiLib = httpsTempLib(
-    environment === Env.Production
-      ? `tool-api.${domain}.com`
-      : `tool-api-test.${domain}.com`
+    isPro ? `tool-api.${domain}.com` : `tool-api-test.${domain}.com`
   );
   if (domain === "vidnoz")
     baseApiOldLib = httpsTempLib(
-      environment === Env.Production
-        ? `api.${domain}.com`
-        : `api-test.${domain}.com`
+      isPro ? `api.${domain}.com` : `api-test.${domain}.com`
     );
 };
 
@@ -67,17 +64,13 @@ const errorTips = (str: string = ""): never => {
   throw new Error(`${str}`);
 };
 
-const setGloalData = (curLan: Language): void => {
+const initialize = (curLan: Language, websiteName: ISiteName): void => {
   if (curLan in Language) {
     langLib = curLan;
     domainPrefix = langLib === Language.en ? "www" : langLib;
   } else {
     errorTips("Language not supported");
   }
-};
-
-const setVars = (curLan: Language, websiteName: ISiteName): void => {
-  setGloalData(curLan);
   siteName = websiteName;
   switch (websiteName) {
     case "vidnoz":
@@ -277,7 +270,6 @@ class Methods {
     if (!data) return data;
     return JSON.parse(JSON.stringify(data));
   }
-
   // 查找节点的方法
   public qsLib(...args: any): Element | null {
     const len = args?.length;
@@ -297,6 +289,7 @@ class Methods {
 class Service extends Memory {
   constructor() {
     super();
+    this.getHeaders = this.getHeaders.bind(this);
     this.get = this.get.bind(this);
     this.post = this.post.bind(this);
     this.postFormData = this.postFormData.bind(this);
@@ -392,9 +385,6 @@ class API extends Service {
     this.loopTask = this.loopTask.bind(this);
     this.uploadAssets = this.uploadAssets.bind(this);
     this.downloadAssets = this.downloadAssets.bind(this);
-    if (siteName === "miocreate") {
-      console.log("我是 mio, 此处可以修改 this.ApiUrls");
-    }
   }
   async postTemp(
     params: any = {},
@@ -430,20 +420,19 @@ class API extends Service {
     return await this.postTemp(params, "can-task");
   }
   async getUploadUrl(params: any = {}): Promise<any> {
-    const url: string = `${baseApiOldLib || baseApiLib}${
-      this.ApiUrls["get-upload-url"]
-    }`;
+    const url: string = `${baseApiOldLib || baseApiLib}${this.ApiUrls["get-upload-url"]
+      }`;
     return await this.postTemp(params, "", url);
   }
   async loopTask(
     addTData: any = {},
     curTool: string = "",
-    callback: (res: any) => void = () => {}
+    callback: (res: any) => void = () => { }
   ): Promise<any> {
     const _this = this;
     async function getTaskLoop(
       taskId: number,
-      cb: (res: any) => void = () => {}
+      cb: (res: any) => void = () => { }
     ): Promise<any> {
       let time = 0;
       while (true) {
@@ -519,7 +508,6 @@ class API extends Service {
       const res = await (permanent ? this.getUploadUrl : this.tempUploadUrl)({
         file_name: fileName || `default.${file.type}`,
       });
-      console.log("res", res);
       const code = res?.code;
       const uploadUrl = res?.data?.upload_url;
       const key = res?.data?.key;
@@ -551,7 +539,7 @@ class API extends Service {
   async downloadAssets({
     key,
     filename = "",
-    callback = () => {},
+    callback = () => { },
   }: {
     key: string;
     filename?: string;
@@ -665,7 +653,7 @@ const $LIB = (
   curLan: Language = Language.en,
   websiteName: ISiteName = "vidnoz"
 ) => {
-  setVars(curLan, websiteName);
+  initialize(curLan, websiteName);
   const memory: any = new Memory();
   const methods: any = new Methods();
   const service: any = new Service();
