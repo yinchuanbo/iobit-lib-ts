@@ -443,11 +443,11 @@ class API extends Service {
             await cb?.(res);
             return Promise.resolve(res?.data?.additional_data ?? {});
           } else if (![0, -1, -2].includes(status)) {
-            return Promise.reject();
+            return Promise.reject(res);
           }
         } catch (error) {
           if (time >= 5) {
-            return Promise.reject();
+            return Promise.reject(error);
           }
           time++;
         }
