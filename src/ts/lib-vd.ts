@@ -420,19 +420,21 @@ class API extends Service {
     return await this.postTemp(params, "can-task");
   }
   async getUploadUrl(params: any = {}): Promise<any> {
-    const url: string = `${baseApiOldLib || baseApiLib}${this.ApiUrls["get-upload-url"]
-      }`;
+    const url: string = `${baseApiOldLib || baseApiLib}${
+      this.ApiUrls["get-upload-url"]
+    }`;
     return await this.postTemp(params, "", url);
   }
   async loopTask(
     addTData: any = {},
     curTool: string = "",
-    callback: (res: any) => void = () => { }
+    callback: (res: any) => void = () => {},
+    resCb: (res: any) => void = () => {}
   ): Promise<any> {
     const _this = this;
     async function getTaskLoop(
       taskId: number,
-      cb: (res: any) => void = () => { }
+      cb: (res: any) => void = () => {}
     ): Promise<any> {
       let time = 0;
       while (true) {
@@ -444,6 +446,8 @@ class API extends Service {
             return Promise.resolve(res?.data?.additional_data ?? {});
           } else if (![0, -1, -2].includes(status)) {
             return Promise.reject(res);
+          } else {
+            resCb?.(res);
           }
         } catch (error) {
           if (time >= 5) {
@@ -539,7 +543,7 @@ class API extends Service {
   async downloadAssets({
     key,
     filename = "",
-    callback = () => { },
+    callback = () => {},
   }: {
     key: string;
     filename?: string;
