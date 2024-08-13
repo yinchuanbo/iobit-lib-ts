@@ -7,7 +7,7 @@ type IURL = {
 
 type EventType = MouseEvent | TouchEvent;
 
-type ISiteName = "vidnoz" | "miocreate";
+type ISiteName = "vidnoz" | "miocreate" | "vidqu";
 
 interface HttpsTempFunction {
   (str: string): string;
@@ -51,8 +51,9 @@ const setEnvByWebite: IFUNC = (domain) => {
   curDomain = `${domainPrefix}.${domain}.com`;
   environment = hostLib.includes(curDomain) ? Env.Production : Env.Test;
   const isPro = environment === Env.Production;
+  const suffix = domain === "vidqu" ? "ai" : "com";
   baseApiLib = httpsTempLib(
-    isPro ? `tool-api.${domain}.com` : `tool-api-test.${domain}.com`
+    isPro ? `tool-api.${domain}.${suffix}` : `tool-api-test.${domain}.${suffix}`
   );
   if (domain === "vidnoz")
     baseApiOldLib = httpsTempLib(
@@ -75,6 +76,7 @@ const initialize = (curLan: Language, websiteName: ISiteName): void => {
   switch (websiteName) {
     case "vidnoz":
     case "miocreate":
+    case "vidqu":
       setEnvByWebite(websiteName);
       break;
     default:
@@ -300,6 +302,7 @@ class Service extends Memory {
       "Content-Type": "application/json",
       "X-TASK-VERSION": (window as any).XTASKVERSION || "2.0.0",
       "Request-Language": langLib,
+      "Request-Origin": siteName
     };
     const curToken: any = this.getCookie("access_token");
     if (curToken) headers["Authorization"] = "Bearer " + curToken;
@@ -371,6 +374,7 @@ class API extends Service {
     "can-task": "ai/tool/can-task",
     "get-upload-url": "ai/source/get-upload-url",
     dance: "ai/tool/dance",
+    "create-task": "generate/image/create-task",
   };
   constructor() {
     super();
@@ -380,6 +384,7 @@ class API extends Service {
     this.getTask = this.getTask.bind(this);
     this.getAccessUrl = this.getAccessUrl.bind(this);
     this.tempUploadUrl = this.tempUploadUrl.bind(this);
+    this.vidquCreateTask = this.vidquCreateTask.bind(this);
     this.canTask = this.canTask.bind(this);
     this.getUploadUrl = this.getUploadUrl.bind(this);
     this.loopTask = this.loopTask.bind(this);
@@ -415,6 +420,9 @@ class API extends Service {
   }
   async tempUploadUrl(params: any = {}): Promise<any> {
     return await this.postTemp(params, "temp-upload-url");
+  }
+  async vidquCreateTask(params: any = {}): Promise<any> {
+    return await this.postTemp(params, "create-task");
   }
   async canTask(params: any = {}): Promise<any> {
     return await this.postTemp(params, "can-task");
