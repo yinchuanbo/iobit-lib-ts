@@ -302,7 +302,7 @@ class Service extends Memory {
       "Content-Type": "application/json",
       "X-TASK-VERSION": (window as any).XTASKVERSION || "2.0.0",
       "Request-Language": langLib,
-      "Request-Origin": siteName
+      "Request-Origin": siteName,
     };
     const curToken: any = this.getCookie("access_token");
     if (curToken) headers["Authorization"] = "Bearer " + curToken;
@@ -379,6 +379,8 @@ class API extends Service {
   constructor() {
     super();
     this.postTemp = this.postTemp.bind(this);
+    this.postComm = this.postComm.bind(this);
+    this.getComm = this.getComm.bind(this);
     this.addTask = this.addTask.bind(this);
     this.danceTask = this.danceTask.bind(this);
     this.getTask = this.getTask.bind(this);
@@ -401,6 +403,26 @@ class API extends Service {
         url || `${baseApiLib}${this.ApiUrls[pathname]}`,
         params
       );
+      return Promise.resolve(res);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+  async postComm(
+    url: string = "",
+    params: any = {},
+    headers: HeadersInit = {}
+  ): Promise<any> {
+    try {
+      const res = await this.post(`${baseApiLib}${url}`, params, headers);
+      return Promise.resolve(res);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+  async getComm(url: string = "", headers: HeadersInit = {}): Promise<any> {
+    try {
+      const res = await this.get(`${baseApiLib}${url}`, headers);
       return Promise.resolve(res);
     } catch (error) {
       return Promise.reject(error);
