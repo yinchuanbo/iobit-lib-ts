@@ -47,6 +47,8 @@ let baseApiLib: string;
 let baseApiOldLib: string;
 let siteName: ISiteName = "vidnoz";
 
+let xDeviceId: string = "";
+
 const setEnvByWebite: IFUNC = (domain) => {
   curDomain = `${domainPrefix}.${domain}.com`;
   environment = hostLib.includes(curDomain) ? Env.Production : Env.Test;
@@ -306,6 +308,7 @@ class Service extends Memory {
     };
     const curToken: any = this.getCookie("access_token");
     if (curToken) headers["Authorization"] = "Bearer " + curToken;
+    if(xDeviceId) headers["x-device-id"] = xDeviceId;
     return headers;
   }
   public get(url: string, headers: HeadersInit = {}): Promise<any> {
@@ -315,7 +318,12 @@ class Service extends Memory {
         ...this.getHeaders(),
         ...headers,
       },
-    }).then((response) => response.json());
+    }).then((response) => {
+      // 获取响应头中的 x-device-id 字段
+      const xDeviceIdTemp = response.headers.get("x-device-id");
+      if (xDeviceIdTemp && !xDeviceId) xDeviceId = xDeviceIdTemp;
+      return response.json();
+    });
   }
   public post(url: string, data: any, headers: HeadersInit = {}): Promise<any> {
     return fetch(url, {
@@ -325,7 +333,12 @@ class Service extends Memory {
         ...headers,
       },
       body: JSON.stringify(data),
-    }).then((response) => response.json());
+    }).then((response) => {
+      // 获取响应头中的 x-device-id 字段
+      const xDeviceIdTemp = response.headers.get("x-device-id");
+      if (xDeviceIdTemp && !xDeviceId) xDeviceId = xDeviceIdTemp;
+      return response.json();
+    });
   }
   public postFormData(
     url: string,
