@@ -320,7 +320,7 @@ class Service extends Memory {
       },
     }).then((response) => {
       // 获取响应头中的 x-device-id 字段
-      const xDeviceIdTemp = response.headers.get("x-device-id");
+      const xDeviceIdTemp = response.headers.get("X-Device-Id");
       if (xDeviceIdTemp && !xDeviceId) xDeviceId = xDeviceIdTemp;
       return response.json();
     });
@@ -335,7 +335,7 @@ class Service extends Memory {
       body: JSON.stringify(data),
     }).then((response) => {
       // 获取响应头中的 x-device-id 字段
-      const xDeviceIdTemp = response.headers.get("x-device-id");
+      const xDeviceIdTemp = response.headers.get("X-Device-Id");
       if (xDeviceIdTemp && !xDeviceId) xDeviceId = xDeviceIdTemp;
       return response.json();
     });
