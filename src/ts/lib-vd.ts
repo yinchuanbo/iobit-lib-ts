@@ -47,7 +47,7 @@ let baseApiLib: string;
 let baseApiOldLib: string;
 let siteName: ISiteName = "vidnoz";
 
-let xDeviceId: string = "";
+let xDeviceId: string = localStorage.getItem('xDeviceId') || "";
 
 const setEnvByWebite: IFUNC = (domain) => {
   curDomain = `${domainPrefix}.${domain}.com`;
@@ -308,7 +308,10 @@ class Service extends Memory {
     };
     const curToken: any = this.getCookie("access_token");
     if (curToken) headers["Authorization"] = "Bearer " + curToken;
-    if(xDeviceId) headers["x-device-id"] = xDeviceId;
+    if(xDeviceId){
+      headers["x-device-id"] = xDeviceId;
+      localStorage.setItem('xDeviceId',xDeviceId)
+    }
     return headers;
   }
   public get(url: string, headers: HeadersInit = {}): Promise<any> {
