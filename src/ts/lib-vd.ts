@@ -304,7 +304,7 @@ class Service extends Memory {
       "Content-Type": "application/json",
       "X-TASK-VERSION": (window as any).XTASKVERSION || "2.0.0",
       "Request-Language": langLib,
-      "Request-Origin": siteName,
+      "Request-Origin": siteName === "vidnoz" ? "web" : siteName,
     };
     const curToken: any = this.getCookie("access_token");
     if (curToken) headers["Authorization"] = "Bearer " + curToken;
@@ -650,7 +650,8 @@ class API extends Service {
                         return pump();
                       }
                     )
-                    .catch(() => {
+                    .catch((err) => {
+                      console.error(err)
                       callback?.({
                         error: true,
                       });
