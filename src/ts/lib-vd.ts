@@ -525,9 +525,7 @@ class API extends Service {
           return Promise.reject(error);
         }
       } else {
-        return Promise.resolve({
-          code,
-        });
+        return Promise.resolve(res);
       }
     } catch (error) {
       return Promise.reject(error);
