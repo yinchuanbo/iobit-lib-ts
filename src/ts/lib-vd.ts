@@ -50,10 +50,10 @@ let siteName: ISiteName = "vidnoz";
 let xDeviceId: string = localStorage.getItem('xDeviceId') || "";
 
 const setEnvByWebite: IFUNC = (domain) => {
-  curDomain = `${domainPrefix}.${domain}.com`;
+  const suffix = domain === "vidqu" ? "ai" : "com";
+  curDomain = `${domainPrefix}.${domain}.${suffix}`;
   environment = hostLib.includes(curDomain) ? Env.Production : Env.Test;
   const isPro = environment === Env.Production;
-  const suffix = domain === "vidqu" ? "ai" : "com";
   baseApiLib = httpsTempLib(
     isPro ? `tool-api.${domain}.${suffix}` : `tool-api-test.${domain}.${suffix}`
   );
