@@ -26,6 +26,7 @@ enum Language {
   de = "de",
   pt = "pt",
   es = "es",
+  ru = "ru",
 }
 
 enum Env {
